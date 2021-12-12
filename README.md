@@ -14,4 +14,6 @@
    - ветка )
    - тестим коммиты из IDE
 
+2.3. Ветвления в Git
+   - [Ветвление, merge и rebase.](02-git-03-branching/README.md)
 
