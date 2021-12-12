@@ -17,3 +17,6 @@
 2.3. Ветвления в Git
    - [Ветвление, merge и rebase.](02-git-03-branching/README.md)
 
+2.4. Инструменты Git
+   - [Инструменты Git](02-git-04-tools/README.md)
+
