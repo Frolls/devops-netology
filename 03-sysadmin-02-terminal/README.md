@@ -52,32 +52,51 @@ The chdir() function only affects the working directory of the current process.
 
 3. Какой процесс с PID 1 является родителем для всех процессов в вашей виртуальной машине Ubuntu 20.04?
 
-Посмотрим список процессов командой `ps`:
-```
-vagrant@vagrant:~$ ps -fp 1
-UID          PID    PPID  C STIME TTY          TIME CMD
-root           1       0  0 14:52 ?        00:00:01 /sbin/init
-```
-
-Процесс с PID == 1 по версии команды `ps -fp 1` это `/sbin/init`.
-
-Интересно, что если посмотреть то же самое просто с флагом `-p 1` или даже просто `1`, то вывод будет отличаться:
+Посмотрим список процессов командой `ps`. Для начала сделаем это "в лоб" с флагом `-p 1` и получим:
 ```
 vagrant@vagrant:~$ ps -p 1
     PID TTY          TIME CMD
       1 ?        00:00:01 systemd
 ```
+Процесс c PID == 1 это `systemd`.
 
-Теперь процесс c PID == 1 это `systemd` :-)
+Интересно, если посмотреть то же самое с дополнительным флагом `-f` или просто выполнить `ps 1`, то вывод будет 
+отличаться:
+```
+vagrant@vagrant:~$ ps -fp 1
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 14:52 ?        00:00:01 /sbin/init
+vagrant@vagrant:~$ ps 1
+    PID TTY      STAT   TIME COMMAND
+      1 ?        Ss     0:01 /sbin/init
+```
+
+Теперь процесс с PID == 1 это `/sbin/init` :-)
+
+Что будет, если вывести только имя процесса? Попробуем:
+```
+vagrant@vagrant:~$ ps -p 1 -o comm=
+systemd
+```
+
+Это `systemd`..
+
+А теперь с флагом `-f`:
+```
+vagrant@vagrant:~$ ps -fp 1 -o comm=
+systemd
+```
+
+И снова `systemd` ))
 
 Продолжим.. Попытка сделать аналогичные телодвижения командой `pstree -H 1 -p`, которая подсветит в выхлопе 
-процесс с PID 1, то получим:
+процесс с PID == 1, привела к результату ниже:
 
 ![img4](img/img4.png)
 
-Это процесс `systemd`.
+С PID == 1 процесс `systemd`.
 
-Вывод: это процесс `systemd`, ноги которого растут из `/sbin/init`
+**Вывод:** PID == 1 у процесса `systemd`, ноги которого растут из `/sbin/init`
 
 11. Узнайте, какую наиболее старшую версию набора инструкций SSE поддерживает ваш процессор с помощью /proc/cpuinfo
 
@@ -90,7 +109,6 @@ avx2 invpcid md_clear flush_l1d
 ```
 
 А еще лучше грепнуть) Типа такого `grep -i 'sse' /proc/cpuinfo`:
-
 ![img5](img/img5.png)
 
 Нашлось две строки, потомучто я выделил два ядра виртуальной машине.
