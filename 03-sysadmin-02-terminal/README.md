@@ -25,7 +25,7 @@ The chdir() function only affects the working directory of the current process.
 
 Т.е. выполняется в текущем процессе.
 
-1. Какая альтернатива без pipe команде `grep <some_string> <some_file> | wc -l`? `man grep` поможет в ответе 
+2. Какая альтернатива без pipe команде `grep <some_string> <some_file> | wc -l`? `man grep` поможет в ответе 
 на этот вопрос. Ознакомьтесь с [документом](http://www.smallo.ruhr.de/award.html) о других подобных 
 некорректных вариантах использования pipe.
 
@@ -49,3 +49,17 @@ The chdir() function only affects the working directory of the current process.
 Проверим, что нам покажет `grep -c 1 test`: `2`
 
 Результаты совпадают примерно на 100%.
+
+3. Какой процесс с PID 1 является родителем для всех процессов в вашей виртуальной машине Ubuntu 20.04?
+
+Посмотрим список процессов командой `ps`:
+```
+vagrant@vagrant:~$ ps 1
+    PID TTY      STAT   TIME COMMAND
+      1 ?        Ss     0:01 /sbin/init
+```
+
+Если сделать аналогичные телодвижения командой `pstree -H 1 -p`, которая подсветит в выхлопе процесс с PID 1, то получим:
+
+![img4](img/img4.png)
+
