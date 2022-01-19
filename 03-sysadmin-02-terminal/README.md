@@ -63,3 +63,20 @@ vagrant@vagrant:~$ ps 1
 
 ![img4](img/img4.png)
 
+11. Узнайте, какую наиболее старшую версию набора инструкций SSE поддерживает ваш процессор с помощью /proc/cpuinfo
+
+`cat /proc/cpuinfo`, `less /proc/cpuinfo` или любая аналогичная команда покажет в строке `flags`:
+```
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 
+ht syscall nx rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 
+cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx rdrand hypervisor lahf_lm abm invpcid_single pti fsgsbase 
+avx2 invpcid md_clear flush_l1d
+```
+
+А еще лучше грепнуть) Типа такого `grep -i 'sse' /proc/cpuinfo`:
+
+![img5](img/img5.png)
+
+Нашлось две строки, потомучто я выделил два ядра.
+
+В итоге, старшая версия набора инструкций SSE == SSE4.2
