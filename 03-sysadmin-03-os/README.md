@@ -141,11 +141,11 @@ tmpfs                         100456       0    100456   0% /run/user/1000
 
 Чтобы забыть об этом навсегда, можно на коленке написать скрипт типа
 ```
-while true ; do echo '' > /proc/1107/fd/1; done &
+while true ; do echo '' > /proc/1107/fd/1 ; done &
 ```
 или
 ```
-while true ; do  > /proc/1107/fd/1 > /dev/null ; done &
+while true ; do  truncate -s 0 /proc/1107/fd/1 ; done &
 ```
 
 Теперь все типа хорошо и навсегда:
