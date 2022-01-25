@@ -11,8 +11,9 @@
 vagrant@vagrant:~$ strace -o log /bin/bash -c 'cd /tmp'
 ```
 
-Теперь можно спокойно с чашечкой кофе изучить содержимое файла `log` и ближе к концу файла увидеть тот единственный 
-`chdir("/tmp")`  :-)
+Грепать не буду, хочу спокойно с чашечкой кофе изучить содержимое файла `log` и ближе к концу файла увидеть тот 
+единственный `chdir("/tmp")`  :-)
+
 
 2. Попробуйте использовать команду `file` на объекты разных типов на файловой системе. Например:
 ```
@@ -88,83 +89,178 @@ lsof -p 1059
 [1]+  Exit 1 
 ```
 
-Запустил заново, теперь PID == 1107:
+Запустил заново, теперь PID == 1183:
 ```
 vagrant@vagrant:~$ yes 'hello' >> log & rm log
-[1] 1107
-vagrant@vagrant:~$ ls -lah /proc/1107/fd/
-total 0
-dr-x------ 2 vagrant vagrant  0 Jan 23 16:17 .
-dr-xr-xr-x 9 vagrant vagrant  0 Jan 23 16:17 ..
-lrwx------ 1 vagrant vagrant 64 Jan 23 16:17 0 -> /dev/pts/0
-l-wx------ 1 vagrant vagrant 64 Jan 23 16:17 1 -> '/home/vagrant/log (deleted)'
-lrwx------ 1 vagrant vagrant 64 Jan 23 16:17 2 -> /dev/pts/0
+[1] 1183
 ```
 
-Место на диске катастрофически быстро убывает:
-```
-vagrant@vagrant:~$ df
-Filesystem                 1K-blocks     Used Available Use% Mounted on
-udev                          457128        0    457128   0% /dev
-tmpfs                         100460      648     99812   1% /run
-/dev/mapper/vgvagrant-root  64284292 51518284   9470776  85% /
-tmpfs                         502292        0    502292   0% /dev/shm
-tmpfs                           5120        0      5120   0% /run/lock
-tmpfs                         502292        0    502292   0% /sys/fs/cgroup
-/dev/sda1                     523248        4    523244   1% /boot/efi
-tmpfs                         100456        0    100456   0% /run/user/1000
-```
-
-Что же нам теперь делать??
+Что же нам теперь делать дальше??
 
 Один из способов обновления файла -- команда `truncate`, которая уменьшает или увеличивает размер файла до заданного 
 размера:
 ```
-vagrant@vagrant:~$ truncate -s 0 /proc/1107/fd/1
+vagrant@vagrant:~$ truncate -s 0 /proc/1183/fd/1
 ```
 
 Доказательство:
 ```
 vagrant@vagrant:~$ df
-Filesystem                 1K-blocks    Used Available Use% Mounted on
-udev                          457128       0    457128   0% /dev
-tmpfs                         100460     648     99812   1% /run
-/dev/mapper/vgvagrant-root  64284292 2663532  58325528   5% /
-tmpfs                         502292       0    502292   0% /dev/shm
-tmpfs                           5120       0      5120   0% /run/lock
-tmpfs                         502292       0    502292   0% /sys/fs/cgroup
-/dev/sda1                     523248       4    523244   1% /boot/efi
-tmpfs                         100456       0    100456   0% /run/user/1000
+Filesystem                 1K-blocks     Used Available Use% Mounted on
+udev                          472572        0    472572   0% /dev
+tmpfs                         100012      648     99364   1% /run
+/dev/mapper/vgvagrant-root  64284292 11726956  49262104  20% /
+tmpfs                         500052        0    500052   0% /dev/shm
+tmpfs                           5120        0      5120   0% /run/lock
+tmpfs                         500052        0    500052   0% /sys/fs/cgroup
+/dev/sda1                     523248        4    523244   1% /boot/efi
+tmpfs                         100008        0    100008   0% /run/user/1000
 ```
 
-Можно сделать "в лоб": `echo '' > /proc/1107/fd/1`
-
+Можно сделать "в лоб": `echo '' > /proc/1183/fd/1`
 Чтобы забыть об этом навсегда, можно на коленке написать скрипт типа
 ```
-while true ; do echo '' > /proc/1107/fd/1 ; done &
+while true ; do echo '' > /proc/1183/fd/1 ; done &
 ```
 или
 ```
-while true ; do  truncate -s 0 /proc/1107/fd/1 ; done &
+while true ; do  truncate -s 0 /proc/1183/fd/1 ; done &
 ```
 
-Теперь все типа хорошо и навсегда:
+Но это не тру-метод. Мы же будем использовать перенаправление потоков.
+
+#### Шаманство с перенаправлением потоков для решения задачи
+
+Установим отладчик `gdb`: 
+```
+vagrant@vagrant:~$ sudo apt install gdb
+```
+
+Подключимся к процессу c PID == 1183 через `gdb`:
+```
+vagrant@vagrant:~$ sudo gdb -p 1183
+GNU gdb (Ubuntu 9.2-0ubuntu1~20.04.1) 9.2
+Copyright (C) 2020 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-linux-gnu".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word".
+Attaching to process 1183
+Reading symbols from /usr/bin/yes...
+(No debugging symbols found in /usr/bin/yes)
+Reading symbols from /lib/x86_64-linux-gnu/libc.so.6...
+Reading symbols from /usr/lib/debug//lib/x86_64-linux-gnu/libc-2.31.so...
+Reading symbols from /lib64/ld-linux-x86-64.so.2...
+(No debugging symbols found in /lib64/ld-linux-x86-64.so.2)
+0x00007f6f435f41e7 in __GI___libc_write (fd=1, buf=0x5589ab258440, nbytes=8190)
+    at ../sysdeps/unix/sysv/linux/write.c:26
+26      ../sysdeps/unix/sysv/linux/write.c: No such file or directory.
+```
+
+Продолжим. Смотрим открытые файл дескрипторы:
+```
+(gdb) shell ls -lah /proc/1183/fd/
+total 0
+dr-x------ 2 vagrant vagrant  0 Jan 25 13:42 .
+dr-xr-xr-x 9 vagrant vagrant  0 Jan 25 13:41 ..
+lrwx------ 1 vagrant vagrant 64 Jan 25 13:42 0 -> /dev/pts/0
+l-wx------ 1 vagrant vagrant 64 Jan 25 13:44 1 -> '/home/vagrant/log (deleted)'
+lrwx------ 1 vagrant vagrant 64 Jan 25 13:44 2 -> /dev/pts/0
+```
+
+Запускаем системный вызов из `gdb` для создания файла от имени нашего процесса:
+```
+(gdb) call open("/dev/null", 00001101, 0666)
+$1 = 3
+```
+
+Отлично! Мы получили новый файл дескриптор с номером 3 и новый открытый файл `/dev/null`, проверяем:
+```
+(gdb) shell ls -lah /proc/1183/fd/
+total 0
+dr-x------ 2 vagrant vagrant  0 Jan 25 13:42 .
+dr-xr-xr-x 9 vagrant vagrant  0 Jan 25 13:41 ..
+lrwx------ 1 vagrant vagrant 64 Jan 25 13:42 0 -> /dev/pts/0
+l-wx------ 1 vagrant vagrant 64 Jan 25 13:44 1 -> '/home/vagrant/log (deleted)'
+lrwx------ 1 vagrant vagrant 64 Jan 25 13:44 2 -> /dev/pts/0
+l-wx------ 1 vagrant vagrant 64 Jan 25 13:53 3 -> /dev/null
+```
+
+Есть такой системный вызов, который меняет файл дескрипторы, называется `dup2`. Попробуем его применить:
+```
+(gdb) call (int)dup2(3,1)
+$1 = 1
+```
+
+Смотрим, что из этого получилось:
+```
+(gdb) shell ls -lah /proc/1183/fd
+total 0
+dr-x------ 2 vagrant vagrant  0 Jan 25 14:08 .
+dr-xr-xr-x 9 vagrant vagrant  0 Jan 25 14:07 ..
+lrwx------ 1 vagrant vagrant 64 Jan 25 14:08 0 -> /dev/pts/0
+l-wx------ 1 vagrant vagrant 64 Jan 25 14:08 1 -> /dev/null
+lrwx------ 1 vagrant vagrant 64 Jan 25 14:08 2 -> /dev/pts/0
+l-wx------ 1 vagrant vagrant 64 Jan 25 14:08 3 -> /dev/null
+```
+
+Файл дескриптор 3 нам больше не нужен, закроем его и проверим, что получилось:
+```
+(gdb) call close (3)
+$2 = 0
+(gdb) shell ls -lah /proc/1183/fd
+total 0
+dr-x------ 2 vagrant vagrant  0 Jan 25 14:08 .
+dr-xr-xr-x 9 vagrant vagrant  0 Jan 25 14:07 ..
+lrwx------ 1 vagrant vagrant 64 Jan 25 14:08 0 -> /dev/pts/0
+l-wx------ 1 vagrant vagrant 64 Jan 25 14:08 1 -> /dev/null
+lrwx------ 1 vagrant vagrant 64 Jan 25 14:08 2 -> /dev/pts/0
+```
+
+Супер! Теперь вызодим из `gdb`:
+```
+(gdb) q
+A debugging session is active.
+
+        Inferior 1 [process 1183] will be detached.
+
+Quit anyway? (y or n) y
+Detaching from program: /usr/bin/yes, process 1183
+[Inferior 1 (process 1183) detached]
+```
+
+Проверим, что процесс жив:
+```
+vagrant@vagrant:~$ ps 1183
+    PID TTY      STAT   TIME COMMAND
+   1183 pts/0    R      3:56 yes hello
+
+```
+
+А место даже освободилось:
 ```
 vagrant@vagrant:~$ df
 Filesystem                 1K-blocks    Used Available Use% Mounted on
-udev                          457128       0    457128   0% /dev
-tmpfs                         100460     656     99804   1% /run
-/dev/mapper/vgvagrant-root  64284292 1650644  59338416   3% /
-tmpfs                         502292       0    502292   0% /dev/shm
+udev                          472572       0    472572   0% /dev
+tmpfs                         100012     656     99356   1% /run
+/dev/mapper/vgvagrant-root  64284292 2352316  58636744   4% /
+tmpfs                         500052       0    500052   0% /dev/shm
 tmpfs                           5120       0      5120   0% /run/lock
-tmpfs                         502292       0    502292   0% /sys/fs/cgroup
+tmpfs                         500052       0    500052   0% /sys/fs/cgroup
 /dev/sda1                     523248       4    523244   1% /boot/efi
-tmpfs                         100456       0    100456   0% /run/user/1000
+tmpfs                         100008       0    100008   0% /run/user/1000
 ```
 
-Еще можно чистить по `cron` ) Но это совсем другая история (с)
-
-4. Занимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)?
+5. Занимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)?
 
 Zombie-процессы освобождают свои ресурсы, не занимая память. Они всего лишь занимают место в таблице процессов, что
 потенциально может привести к невозможности запустить новые процессы. Вроде как-то так.
