@@ -14,7 +14,7 @@ production-системы, где процессы должны находить
 
 Не буду описывать процесс установки, суть задания не в нём. Отмечу, что исполняемый файл поместил в `/opt` (не хочу в
 бинарники):
-```
+```bash
 vagrant@vagrant:~$ sudo mv node_exporter-1.3.1.linux-amd64 /opt/node_exporter
 vagrant@vagrant:~$ ls /opt/node_exporter/
 LICENSE  node_exporter  NOTICE
@@ -26,7 +26,7 @@ LICENSE  node_exporter  NOTICE
 
 Создадим файл `node_exporter.service` и поместим его в `/etc/systemd/system/`. Впишем в него следующие строки:
 
-```
+```bash
 [Unit]
 Description=my little unit for node_exporter
 Documentation=https://github.com/prometheus/node_exporter/blob/master/README.md
@@ -43,7 +43,7 @@ WantedBy=multi-user.target
 ```
 
 Выполним `vagrant@vagrant:~$ sudo systemctl daemon-reload`. Смотрим статус:
-```
+```bash
 vagrant@vagrant:~$ sudo systemctl status node_exporter
 ● node_exporter.service - my little unit for node_exporter
      Loaded: loaded (/etc/systemd/system/node_exporter.service; disabled; vendor preset: enabled)
@@ -52,7 +52,7 @@ vagrant@vagrant:~$ sudo systemctl status node_exporter
 ```
 
 Уже неплохо.. Попробуем стартануть:
-```
+```bash
 vagrant@vagrant:~$ sudo systemctl start node_exporter
 vagrant@vagrant:~$ sudo systemctl status node_exporter
 ● node_exporter.service - my little unit for node_exporter
@@ -81,7 +81,7 @@ lines 1-20/20 (END)
 Что-то даже взлетело и не ругается сразу. Что ж, бывает..
 
 Поместим в автозагрузку:
-```
+```bash
 vagrant@vagrant:~$ sudo systemctl enable node_exporter
 Created symlink /etc/systemd/system/multi-user.target.wants/node_exporter.service → /etc/systemd/system/node_exporter.service.
 vagrant@vagrant:~$ sudo systemctl status node_exporter
@@ -97,7 +97,7 @@ vagrant@vagrant:~$ sudo systemctl status node_exporter
 ```
 
 Нежно завершим процесс и посмотрим, что произойдет через 42 секунды: 
-```
+```bash
 vagrant@vagrant:~$ sudo kill -9 948
 vagrant@vagrant:~$ sudo systemctl status node_exporter
 ● node_exporter.service - my little unit for node_exporter
@@ -125,7 +125,7 @@ vagrant@vagrant:~$ sudo systemctl status node_exporter
 
 Проверю после перезагрузки. Работает, врать не буду. 100500 однотипный кусок текста копипастить тоже не стану. 
 Процесс запустился, отличается только PID == 610.
-```
+```bash
 vagrant@vagrant:~$ ps -f 610
 UID          PID    PPID  C STIME TTY      STAT   TIME CMD
 root         610       1  0 16:39 ?        Ssl    0:00 /opt/node_exporter/node_exporter
@@ -140,7 +140,7 @@ root         610       1  0 16:39 ?        Ssl    0:00 /opt/node_exporter/node_e
 
 Вывод `/metrics` по-умолчанию содержит более 1000 строк.. Точнее, 1058, включая комментарии )
 Гы:
-```
+```bash
 vagrant@vagrant:~$ grep -c node_ metrics 
 935
 ```
@@ -148,7 +148,7 @@ vagrant@vagrant:~$ grep -c node_ metrics
 Какие опции бы выбрал, зависит от задачи, поэтому в качестве ответа буду стрелять из пушки по воробьям ))
 
 Грепнем по словам `cpu, memory, disk, network` и получим (все не покажу):
-```
+```bash
 node_cpu_guest_seconds_total{cpu="0",mode="nice"} 0
 node_cpu_guest_seconds_total{cpu="0",mode="user"} 0
 node_cpu_guest_seconds_total{cpu="1",mode="nice"} 0
@@ -200,7 +200,7 @@ node_network_transmit_errs_total{device="lo"} 0
 системе виртуализации?
 
 Пока не знаю, но сейчас проверим..
-```
+```bash
 vagrant@vagrant:~$ dmesg | grep virtual
 [    0.003010] CPU MTRRs all blank - virtualized system.
 [    0.079209] Booting paravirtualized kernel on KVM
@@ -227,14 +227,14 @@ vagrant@vagrant:~$ dmesg | grep vbox
 существующий лимит не позволит достичь такого числа (`ulimit --help`)?
 
 Дефолтное состояние:
-```
+```bash
 vagrant@vagrant:~$ sysctl -n fs.nr_open
 1048576
 ```
 
 Вызов `strace sysctl -n fs.nr_open` показал, что собака порылась в `proc/sys/fs/nr_open`, который возвращает то же 
 значение `1048576`:
-```
+```bash
 vagrant@vagrant:~$ cat /proc/sys/fs/nr_open 
 1048576
 ```
@@ -243,7 +243,7 @@ vagrant@vagrant:~$ cat /proc/sys/fs/nr_open
 пока не нашел).
 
 `ulimit --help` показал, что для юзера есть `soft` и `hard` лимиты:
-```
+```bash
 vagrant@vagrant:~$ ulimit -Sn
 1024
 vagrant@vagrant:~$ ulimit -Hn
@@ -258,7 +258,7 @@ vagrant@vagrant:~$ ulimit -Hn
 
 
 Утащил из презентации )
-```
+```bash
 root@vagrant:~# unshare -f -p --mount-proc sleep 1h
 root@vagrant:~# ps aux
 ..
@@ -266,7 +266,7 @@ root        1723  0.0  0.0   8076   592 pts/0    S    16:23   0:00 sleep 1h
 ..
 ```
 Потом
-```
+```bash
 root@vagrant:~# nsenter -t 1723 -p -m
 root@vagrant:/# ps
     PID TTY          TIME CMD
@@ -284,7 +284,7 @@ Ubuntu 20.04 (**это важно, поведение в других ОС не 
 
 Дык это ж fork bomb, основе которой рекурсивная функция. Подождем (надоело ждать), пока она займет ресурсы системы и 
 вызовем `dmesg`:
-```
+```bash
 ..
 [ 4132.287398] cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/session-3.scope
 ..
@@ -293,7 +293,7 @@ Ubuntu 20.04 (**это важно, поведение в других ОС не 
 Сработал механизм ограничения ресурсов внутри конкретной группы процессов.
 
 Лимиты можно глянуть все той же командой `ulimit -a`:
-```
+```bash
 vagrant@vagrant:~$ ulimit -a
 core file size          (blocks, -c) 0
 data seg size           (kbytes, -d) unlimited
