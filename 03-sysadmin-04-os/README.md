@@ -42,8 +42,74 @@ RestartSec=42s
 WantedBy=multi-user.target
 ```
 
+---
+
+### upd по замечанию "Предлагаю уточнить как именно в службу будут передаваться дополнительные опции."
+
+Предложение рассмотрено и принято)
+
+В файл `/etc/default/node_exporter` заботливо положил опцию для примера, параметры подглядел в `node_exporter --help`: 
+
+```bash
+                          
+# Default settings for my node_exporter
+
+# Example options
+MY_LITTLE_OPTION=--log.level="debug" --log.format=json --web.listen-address=":9100"
+```
+
+Сам файл `node_exporter.service` поправил:
+
+```bash
+
+[Unit]
+Description=my little unit for node_exporter
+Documentation=https://github.com/prometheus/node_exporter/blob/master/README.md
+
+[Service]
+EnvironmentFile=-/etc/default/node_exporter
+ExecStart=/opt/node_exporter/node_exporter $MY_LITTLE_OPTION
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Проверим, что заработало:
+```bash
+
+vagrant@vagrant:~$ sudo systemctl status node_exporter
+● node_exporter.service - my little unit for node_exporter
+     Loaded: loaded (/etc/systemd/system/node_exporter.service; disabled; vendor preset: enabled)
+     Active: active (running) since Mon 2022-02-07 11:26:29 UTC; 3s ago
+       Docs: https://github.com/prometheus/node_exporter/blob/master/README.md
+   Main PID: 13614 (node_exporter)
+      Tasks: 4 (limit: 1071)
+     Memory: 2.3M
+     CGroup: /system.slice/node_exporter.service
+             └─13614 /opt/node_exporter/node_exporter --log.level=debug --log.format=json --web.listen-address=:9100
+
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"thermal_zone","level":">
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"time","level":"info","t>
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"timex","level":"info",">
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"udp_queues","level":"in>
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"uname","level":"info",">
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"vmstat","level":"info",>
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"xfs","level":"info","ts>
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"node_exporter.go:115","collector":"zfs","level":"info","ts>
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"address":":9100","caller":"node_exporter.go:199","level":"info","ms>
+Feb 07 11:26:29 vagrant node_exporter[13614]: {"caller":"tls_config.go:195","http2":false,"level":"info","msg":"TLS>
+lines 1-20/20 (END)
+
+````
+
+---
+
 Выполним `vagrant@vagrant:~$ sudo systemctl daemon-reload`. Смотрим статус:
 ```bash
+
 vagrant@vagrant:~$ sudo systemctl status node_exporter
 ● node_exporter.service - my little unit for node_exporter
      Loaded: loaded (/etc/systemd/system/node_exporter.service; disabled; vendor preset: enabled)
@@ -53,6 +119,7 @@ vagrant@vagrant:~$ sudo systemctl status node_exporter
 
 Уже неплохо.. Попробуем стартануть:
 ```bash
+
 vagrant@vagrant:~$ sudo systemctl start node_exporter
 vagrant@vagrant:~$ sudo systemctl status node_exporter
 ● node_exporter.service - my little unit for node_exporter
@@ -282,7 +349,7 @@ Ubuntu 20.04 (**это важно, поведение в других ОС не 
 (минуты) – ОС должна стабилизироваться. Вызов `dmesg` расскажет, какой механизм помог автоматической стабилизации. 
 Как настроен этот механизм по-умолчанию, и как изменить число процессов, которое можно создать в сессии?
 
-Дык это ж fork bomb, основе которой рекурсивная функция. Подождем (надоело ждать), пока она займет ресурсы системы и 
+Дык это ж fork bomb, в основе которой рекурсивная функция. Подождем (надоело ждать), пока она займет ресурсы системы и 
 вызовем `dmesg`:
 ```bash
 ..
