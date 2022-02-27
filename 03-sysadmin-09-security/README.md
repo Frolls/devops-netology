@@ -316,3 +316,33 @@ To                         Action      From
 80 (v6)                    ALLOW IN    Anywhere (v6)             
 443 (v6)                   ALLOW IN    Anywhere (v6)            
 ```
+
+Изнутри:
+
+```bash
+
+vagrant@vagrant:~$ ss -tnl
+State               Recv-Q              Send-Q                           Local Address:Port                             Peer Address:Port              Process              
+LISTEN              0                   4096                             127.0.0.53%lo:53                                    0.0.0.0:*                                      
+LISTEN              0                   128                                    0.0.0.0:22                                    0.0.0.0:*                                      
+LISTEN              0                   511                                          *:443                                         *:*                                      
+LISTEN              0                   511                                          *:80                                          *:*                                      
+LISTEN              0                   128                                       [::]:22                                       [::]:* 
+```
+
+Проверим снаружи:
+
+```bash
+
+[frolls@mainframe ~]$ nmap 192.168.1.10
+Starting Nmap 7.92 ( https://nmap.org ) at 2022-02-27 16:23 +05
+Nmap scan report for 192.168.1.10
+Host is up (0.00052s latency).
+Not shown: 997 filtered tcp ports (no-response)
+PORT    STATE SERVICE
+22/tcp  open  ssh
+80/tcp  open  http
+443/tcp open  https
+
+Nmap done: 1 IP address (1 host up) scanned in 4.98 seconds
+```
