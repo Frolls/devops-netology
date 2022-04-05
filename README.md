@@ -52,3 +52,6 @@
 
 4.2. Использование Python для решения типовых DevOps задач
    - [Использование Python для решения типовых DevOps задач](04-script-02-py/README.md)
+
+4.3. Языки разметки JSON и YAML
+   - [Языки разметки JSON и YAML](04-script-03-yaml/README.md)
