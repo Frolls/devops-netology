@@ -55,3 +55,7 @@
 
 4.3. Языки разметки JSON и YAML
    - [Языки разметки JSON и YAML](04-script-03-yaml/README.md)
+
+---
+
+[Курсовая работа по итогам модуля "DevOps и системное администрирование"](course_work/README.md)
