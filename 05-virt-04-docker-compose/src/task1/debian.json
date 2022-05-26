@@ -1,0 +1,62 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Debian_64",
+      "boot_wait": "5s",
+
+      "disk_size": "{{user `disk_size`}}",
+      "guest_additions_mode": "disable",
+      "headless": false,
+
+      "iso_url": "{{user `mirror`}}/11.3.0/amd64/iso-cd/debian-11.3.0-amd64-netinst.iso",
+      "iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
+      "http_directory": "debian-11.3",
+
+      "ssh_username": "{{user `ssh_name`}}",
+      "ssh_password": "{{user `ssh_pass`}}",
+      "ssh_port": 22,
+      "ssh_timeout": "30m",
+
+      "vm_name": "{{user `box_basename`}}",
+
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "1024"],
+        ["modifyvm", "{{.Name}}", "--cpus", "1"]
+      ],
+
+      "shutdown_command": "shutdown -h now",
+
+      "boot_command": [
+        "<esc><wait>",
+        "auto <wait>",
+        "net.ifnames=0 <wait>",
+        "preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/pressed.cfg <wait>",
+        "<enter>"
+      ]
+    }
+  ],
+
+  "provisioners": [],
+
+  "post-processors": [
+    {
+      "output": "{{ user `build_directory` }}/{{user `box_basename`}}.{{.Provider}}.box",
+      "type": "vagrant"
+    }
+  ],
+
+  "variables": {
+    "mirror": "http://cdimage.debian.org/debian-cd",
+    "iso_checksum": "2810f894afab9ac2631ddd097599761c1481b85e629d6a3197fe1488713af048d37241eb85def681ba86e62b406dd9b891ee1ae7915416335b6bb000d57c1e53",
+    "iso_checksum_type": "sha512",
+
+    "build_directory": "/build",
+    "box_basename": "my_little_debian-11.3",
+
+    "disk_size": "5000",
+
+    "ssh_name": "vagrant",
+    "ssh_password": "vagrant"
+  }
+}
