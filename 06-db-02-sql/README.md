@@ -45,13 +45,12 @@ Docker-compose манифест [тут](/06-db-02-sql/task1/stack.yml)
 
 Итоговый список БД после выполнения пунктов запросил командой `SELECT datname FROM pg_database;`. Получилось так:
 
-```
-datname
-postgres
-test_db
-template1
-template0
-```
+| datname   |
+| --------- |
+| postgres  |
+| test_db   |
+| template1 |
+| template0 |
 
 Описание таблиц (describe) получил запросом `SELECT column_name, data_type, column_default FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '<table_name>';`
 
