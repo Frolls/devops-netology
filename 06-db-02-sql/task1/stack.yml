@@ -1,0 +1,27 @@
+version: "3.7"
+
+volumes:
+  pg_project:
+    name: pg_project
+  pg_backup:
+    name: pg_backup
+
+services:
+  db:
+    container_name: postgres_container
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: passwd
+    volumes:
+      - pg_project:/var/lib/postgresql/data
+      - pg_backup:/backups
+    ports:
+      - 5432:5432
+
+  # Да, я пользовался Adminer ;-)
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
