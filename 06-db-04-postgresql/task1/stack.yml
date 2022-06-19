@@ -1,0 +1,18 @@
+version: "3.7"
+
+volumes:
+  pg_project:
+    name: pg_project
+
+services:
+  db:
+    container_name: postgres_container
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: passwd
+    volumes:
+      - pg_project:/var/lib/postgresql/data
+      - ./test_data:/backup
+    ports:
+      - 5432:5432

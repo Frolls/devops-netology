@@ -85,3 +85,9 @@
 
 6.3. MySQL   
    - [MySQL](06-db-03-mysql/README.md)
+
+6.4. PostgreSQL   
+   - [PostgreSQL](06-db-04-postgresql/README.md)
+
+7.1. Инфраструктура как код
+   - [Инфраструктура как код](07-terraform-01-intro/README.md)
