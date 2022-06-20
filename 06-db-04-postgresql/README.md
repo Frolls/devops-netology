@@ -62,16 +62,16 @@ postgres=# \q
 Штош, пора восстанавливать бэкап:
 
 ```sql
-root@bb511140ffb7:/# psql -U postgres -W test_database < /backup/test_dump.sql 
-Password: 
+root@bb511140ffb7:/# psql -U postgres -W test_database < /backup/test_dump.sql
+Password:
 SET
 SET
 SET
 SET
 SET
- set_config 
+ set_config
 ------------
- 
+
 (1 row)
 
 SET
@@ -87,7 +87,7 @@ ALTER TABLE
 ALTER SEQUENCE
 ALTER TABLE
 COPY 8
- setval 
+ setval
 --------
       8
 (1 row)
@@ -106,12 +106,11 @@ test_database=# ANALYZE orders;
 ANALYZE
 ```
 
-
 Поиск столбца таблицы `orders` с наибольшим средним значением размера элементов в байтах:
 
 ```sql
 test_database=# select attname from pg_stats where avg_width = (select max(avg_width) from pg_stats where tablename = 'orders');
- attname 
+ attname
 ---------
  title
 (1 row)
@@ -135,5 +134,88 @@ test_database=# select attname from pg_stats where avg_width = (select max(avg_w
 
 Для разбиения на две таблицы необходимо выполнить следующие этапы:
 
-- 
-Создадим две таблички, унаследованные от `orders` и добавим правил для добавления записей в них:
+- переименовать таблицу
+- создать две таблицы, унаследованные от `orders` и подчиняющихся правилам для добавления записей в них
+- перенести данные из старой таблицы в новые
+- удалить старую таблицу
+
+```sql
+begin;
+
+alter table orders rename to orders_backup;
+
+create table orders (
+like orders_backup
+including defaults
+including constraints
+including indexes
+);
+
+create table orders_1 ( check (price > 499) ) inherits (orders);
+create table orders_2 ( check (price <= 499) ) inherits (orders);
+
+alter table orders_1 owner to postgres;
+alter table orders_2 owner to postgres;
+
+create rule price_over_499 as on
+insert to orders where (price > 499)
+do instead
+insert into orders_1 values(NEW.*);
+
+create rule price_less_499 as on
+insert to orders where (price <= 499)
+do instead
+insert into orders_2 values(NEW.*);
+
+insert into orders (id, title, price)
+select id, title, price from orders_backup;
+
+alter table orders_backup alter id drop default;
+
+alter sequence orders_id_seq owned by orders.id;
+
+drop table orders_backup;
+
+end;
+```
+
+В итоге получил две таблички с данными.
+
+**Можно ли было изначально исключить "ручное" разбиение при проектировании таблицы orders** Думаю да, во время создания таблицы `orders`.
+
+## Задача 4
+
+Используя утилиту `pg_dump` создайте бекап БД `test_database`.
+
+Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?
+
+**Решение**
+
+В домашнем задании `06-db-02-sql` уже делали что-то подобное.
+
+```bash
+root@326240e17719:/# pg_dump -U postgres test_database > /backup/test_database.sql
+```
+
+**Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?**
+
+Как минимум два варианта. Первый -- определение ограничения уникальности для столбца:
+
+```sql
+CREATE TABLE public.orders (
+    id integer NOT NULL,
+    title character varying(80) NOT NULL UNIQUE,
+    price integer DEFAULT 0
+);
+```
+
+Второй -- создать ограничение для таблицы:
+
+```sql
+CREATE TABLE public.orders (
+    id integer NOT NULL,
+    title character varying(80) NOT NULL,
+    price integer DEFAULT 0,
+    UNIQUE(title)
+);
+```
