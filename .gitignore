@@ -1,12 +1,12 @@
  
 /.idea/*
-
+/.venv
 /**/.vagrant/*
 
 token
-
+Administrator_accessKeys.*
 Vagrantfile
 
 *.log
 
-/.venv
+
