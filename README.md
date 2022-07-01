@@ -122,6 +122,10 @@
 
 - [Инфраструктура как код](07-terraform-01-intro/README.md)
 
-7.2. Облачные провайдеры и синтаксис Terraform.
+7.2. Облачные провайдеры и синтаксис Terraform
 
 - [Облачные провайдеры и синтаксис Terraform](07-terraform-02-syntax/README.md)
+
+7.5. Основы golang
+
+- [Основы golang](07-terraform-05-golang/README.md)
