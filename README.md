@@ -114,6 +114,10 @@
 
 - [PostgreSQL](06-db-04-postgresql/README.md)
 
+6.5. Elasticsearch
+
+- [Elasticsearch](06-db-05-elasticsearch/README.md)
+
 6.6. Troubleshooting
 
 - [Troubleshooting](06-db-06-troobleshooting/README.md)

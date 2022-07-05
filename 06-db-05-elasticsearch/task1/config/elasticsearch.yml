@@ -1,0 +1,14 @@
+cluster:
+    name: mylittle-cluster
+node:
+    name: netology_test
+
+path:
+    data: /var/lib/elasticsearch
+    repo: /var/lib/elasticsearch/snapshots
+#    logs: /var/log/elasticsearch
+
+transport:
+    host: 127.0.0.1
+http:
+    host: 0.0.0.0
