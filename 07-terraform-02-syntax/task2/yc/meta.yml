@@ -1,0 +1,8 @@
+#cloud-config
+users:
+  - name: terraform
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDG6bfFzDQV0GZ6zm4stXhpaNQtHWRy6asahAf+Uo+JYbCgB+dSBEd/pQbkN+rctNhVrBdgsLn+4dD1wccjQfEK2c4HjK2Xkx9KrrFdjrfOQwuQBLHJHEom3eu7njEQDHmGGEq0DenWvE4L/uhf5eUAifVIQLfqCDWRpGJO9kKxOichCFoSF2/beRyNK6NlWTYF/Mdwv0C2EnQyP3bdiRbAK5NkwFEHMCnJ2oylZrAjyhZQsmB8u9pHPQD6gJ8GT/OB1iSmTDg7bGEc0v0HNJlYH4j0jgIJWah0bt2mCVDIT+Z+efT+cCToqBQAIcmryi0rO89jV34w+EifB4p6qqir frolls@mainframe
