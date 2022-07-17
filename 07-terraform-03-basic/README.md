@@ -15,7 +15,7 @@
 Сделано:
 
 ```
-[frolls@mainframe task2]$ aws s3 ls terraform-07-basic-task1-states --recursive
+[frolls@mainframe task1]$ aws s3 ls terraform-07-basic-task1-states --recursive
 2022-07-17 18:19:09       2856 .terarform/terraform.tfstate
 ```
 
@@ -51,7 +51,7 @@ dynamodb.
 **Решение**
 
 ```bash
-[frolls@mainframe task1]$ terraform workspace list
+[frolls@mainframe task2]$ terraform workspace list
   default
 * prod
   stage
