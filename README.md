@@ -137,3 +137,7 @@
 7.5. Основы golang
 
 - [Основы golang](07-terraform-05-golang/README.md)
+
+8.01. Введение в Ansible
+
+- [Введение в Ansible](08-ansible-01-base/README.md)

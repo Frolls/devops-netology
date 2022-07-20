@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  centos:
+    container_name: centos7
+    image: centos:7
+    restart: on-failure
+    command: ["sleep","infinity"]
+  ubuntu:
+    container_name: ubuntu
+    build: ubuntu/
+    restart: on-failure
+    command: ["sleep","infinity"]
