@@ -138,6 +138,10 @@
 
 - [Основы golang](07-terraform-05-golang/README.md)
 
+7.6. Написание собственных провайдеров для Terraform.
+
+- [Написание собственных провайдеров для Terraform](07-terraform-06-providers/README.md)
+
 8.01. Введение в Ansible
 
 - [Введение в Ansible](08-ansible-01-base/README.md)
