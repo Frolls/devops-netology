@@ -1,0 +1,12 @@
+---
+#elasticsearch:
+#  hosts:
+#    localhost:
+#      ansible_connection: ssh
+#      ansible_user: frolls
+#     ansible_private_key_file: ssh/localhost
+
+elasticsearch:
+  hosts:
+    elasticsearch:
+      ansible_connection: docker

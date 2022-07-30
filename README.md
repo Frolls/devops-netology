@@ -145,3 +145,11 @@
 8.01. Введение в Ansible
 
 - [Введение в Ansible](08-ansible-01-base/README.md)
+
+08.02. Работа с Playbook
+
+- [08.02 Работа с Playbook](08-ansible-02-playbook/README.md)
+
+09.01. Жизненный цикл ПО
+
+- [Жизненный цикл ПО](09-ci-01-intro/README.md)
