@@ -6,7 +6,7 @@
 
 На хостах, описанных в файле реестра [prod.yml](inventory/prod.yml), playbook установит:
 - jdk -- на всех хостах
-- elasticsearch -- на хостах, входящих в группу `elastic`
+- elasticsearch -- на хостах, входящих в группу `elasticsearch`
 - kibana -- на хостах, входящих в группу `kibana`
 
 Необходимо заранее скачать архив дистрибутива JDK в формате `.tar.gz` в папку `playbook/files`.
