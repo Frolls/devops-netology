@@ -148,7 +148,7 @@
 
 08.02. Работа с Playbook
 
-- [08.02 Работа с Playbook](08-ansible-02-playbook/README.md)
+- [Работа с Playbook](08-ansible-02-playbook/README.md)
 
 09.01. Жизненный цикл ПО
 

@@ -1,12 +1,9 @@
 ---
-#elasticsearch:
-#  hosts:
-#    localhost:
-#      ansible_connection: ssh
-#      ansible_user: frolls
-#     ansible_private_key_file: ssh/localhost
-
 elasticsearch:
   hosts:
-    elasticsearch:
+    container_elasticsearch:
+      ansible_connection: docker
+kibana:
+  hosts:
+    container_kibana:
       ansible_connection: docker

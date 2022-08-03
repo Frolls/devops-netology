@@ -2,7 +2,12 @@ version: "3.7"
 
 services:
   elasticsearch:
-    container_name: elasticsearch
-    build: ubuntu/
+    container_name: container_elasticsearch
+    image: centos:7
     restart: on-failure
-    command: ["sleep","infinity"]
+    command: ["sleep", "infinity"]
+  kibana:
+    container_name: container_kibana
+    image: centos:7
+    restart: on-failure
+    command: ["sleep", "infinity"]
