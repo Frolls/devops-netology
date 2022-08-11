@@ -714,3 +714,11 @@ container_kibana           : ok=9    changed=4    unreachable=0    failed=0    s
 ```
 
 10. Выложите playbook в репозиторий.
+
+[Выложил](https://github.com/Frolls/devops-netology/blob/main/08-ansible-03-role/playbooks/playbook.yml)
+
+11. В ответ приведите ссылки на оба репозитория с roles и одну ссылку на репозиторий с playbook.
+
+- [elastic-role](https://github.com/Frolls/elastic-role)
+- [kibana-role](https://github.com/Frolls/kibana-role)
+- [репозиторий с playbook](https://github.com/Frolls/devops-netology/tree/main/08-ansible-03-role)
