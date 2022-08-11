@@ -721,4 +721,4 @@ container_kibana           : ok=9    changed=4    unreachable=0    failed=0    s
 
 - [elastic-role](https://github.com/Frolls/elastic-role)
 - [kibana-role](https://github.com/Frolls/kibana-role)
-- [репозиторий с playbook](https://github.com/Frolls/devops-netology/tree/main/08-ansible-03-role)
+- [репозиторий с playbook](https://github.com/Frolls/devops-netology/tree/main/08-ansible-03-role/playbooks)
