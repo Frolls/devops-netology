@@ -150,6 +150,10 @@
 
 - [Работа с Playbook](08-ansible-02-playbook/README.md)
 
+08.03. Работа с Roles
+
+- [Работа с Roles](08-ansible-03-role/README.md)
+
 09.01. Жизненный цикл ПО
 
 - [Жизненный цикл ПО](09-ci-01-intro/README.md)

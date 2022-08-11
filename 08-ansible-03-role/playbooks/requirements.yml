@@ -1,0 +1,13 @@
+---
+- src: git@github.com:netology-code/mnt-homeworks-ansible.git
+  scm: git
+  version: "1.0.1"
+  name: java
+- src: git@github.com:Frolls/elastic-role.git
+  scm: git
+  version: "1.0.0"
+  name: elastic-role
+- src: git@github.com:Frolls/kibana-role.git
+  scm: git
+  version: "1.0.0"
+  name: kibana-role
